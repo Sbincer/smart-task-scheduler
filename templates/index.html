@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Task Scheduler</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Data Structures Prototype</p>
+          <h1>Smart Task Scheduler</h1>
+        </div>
+        <div class="summary-pill" id="summaryPill">讀取中</div>
+      </section>
+
+      <section class="layout">
+        <aside class="panel task-panel">
+          <div class="panel-header">
+            <h2>新增任務</h2>
+          </div>
+
+          <form id="taskForm" class="task-form">
+            <label>
+              任務名稱
+              <input name="name" type="text" placeholder="例如：完成 Prototype Report" required />
+            </label>
+            <div class="form-grid">
+              <label>
+                Deadline
+                <input name="deadline" type="date" required />
+              </label>
+              <label>
+                預估時數
+                <input name="estimated_hours" type="number" min="0.5" step="0.5" value="1" required />
+              </label>
+            </div>
+            <label>
+              優先等級
+              <select name="priority">
+                <option value="high">高</option>
+                <option value="medium" selected>中</option>
+                <option value="low">低</option>
+              </select>
+            </label>
+            <button type="submit" class="primary-button">新增到任務池</button>
+          </form>
+
+          <div class="divider"></div>
+
+          <div class="panel-header compact">
+            <h2>任務池</h2>
+            <span id="taskCount">0 筆</span>
+          </div>
+          <div id="taskList" class="task-list"></div>
+        </aside>
+
+        <section class="workspace">
+          <section class="panel controls">
+            <label>
+              日期
+              <input id="targetDate" type="date" />
+            </label>
+            <label>
+              開始時間
+              <input id="startTime" type="time" value="09:00" />
+            </label>
+            <label>
+              可用時數
+              <input id="availableHours" type="number" min="1" step="0.5" value="8" />
+            </label>
+            <label>
+              排程策略
+              <select id="algorithm">
+                <option value="heap">Priority Queue / Max-heap</option>
+                <option value="sort">完整排序 Sort</option>
+                <option value="sjf">Shortest Job First</option>
+              </select>
+            </label>
+            <button id="scheduleButton" class="primary-button">產生今日排程</button>
+          </section>
+
+          <section id="warning" class="warning hidden"></section>
+
+          <section class="panel schedule-panel">
+            <div class="panel-header">
+              <div>
+                <h2>每日排程</h2>
+                <p id="scheduleMeta">選擇條件後產生建議順序</p>
+              </div>
+            </div>
+            <div id="scheduleList" class="schedule-list empty-state">尚未產生排程</div>
+          </section>
+
+          <section class="panel benchmark-panel">
+            <div class="panel-header">
+              <div>
+                <h2>效能分析</h2>
+                <p>比較 Priority Queue、完整排序與 SJF 在同一批任務上的執行時間。</p>
+              </div>
+              <button id="benchmarkButton" class="secondary-button">執行測試</button>
+            </div>
+            <div id="benchmarkResult" class="benchmark-grid"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
