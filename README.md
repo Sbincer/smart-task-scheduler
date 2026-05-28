@@ -54,7 +54,41 @@
 ## Final Report
 
 ### 專案說明
-待期末完成後補上。
+Smart Task Scheduler 是一個給學生使用的任務排程 Web App。使用者可以輸入任務名稱、Deadline、預估時數與優先等級，系統會根據任務分數自動產生今日建議排程，並在任務總時數超過可用時間時顯示衝突警告。
+
+Final 版本加入了完整的任務生命週期：使用者可以在完成任務後輸入實際花費時數，系統會計算完成率、本週完成數、逾期任務數與預估誤差。這讓專案不只是一個 todo list，而是能協助使用者回顧時間估計是否準確的排程工具。
+
+### Final 版本功能
+- 新增、刪除任務。
+- 設定 Deadline、預估時數與優先等級。
+- 使用 Priority Queue / Max-heap 產生今日排程。
+- 支援 Sort 與 Shortest Job First 作為比較演算法。
+- 顯示每日時間區塊、任務分數與 deadline 狀態。
+- 偵測今日可用時間不足的排程衝突。
+- 標記任務完成並記錄實際時數。
+- 顯示完成率、本週完成數、逾期數與估時誤差。
+- 內建效能分析工具，可自訂測試任務數，比較不同演算法執行時間。
+
+### 與資料結構及演算法的關聯
+本專案最核心的功能是「自動排程」。系統會先為每個任務計算分數：
+
+```text
+score = deadline urgency + priority weight + duration bias
+```
+
+- Deadline 越近，deadline urgency 越高。
+- 優先等級越高，priority weight 越高。
+- 預估時間較短的任務會得到 duration bias，避免短任務長期被延後。
+
+排程時，系統使用 Greedy Algorithm，每次優先選擇目前分數最高的任務，直到今日可用時間被用完。Final 版本提供三種策略進行比較：
+
+| 策略 | 使用資料結構 / 方法 | 時間複雜度 | 說明 |
+|------|---------------------|------------|------|
+| Priority Queue / Max-heap | Binary Heap | O(n log n) | 將任務依分數放入 heap，每次取出最高分任務。 |
+| Full Sort | Array + TimSort | O(n log n) | 直接將所有任務依分數排序。 |
+| Shortest Job First | Array + Greedy Sort | O(n log n) | 優先安排預估時數較短的任務，作為不同策略的比較基準。 |
+
+透過前端的「效能分析」區塊，可以產生大量假任務並測量三種策略的平均、最快與最慢執行時間。這符合本專題目標：針對系統內同一個功能流程，使用不同資料結構或演算法進行實際效能分析與比較。
 
 ### 使用方式
 
@@ -78,6 +112,25 @@ python app.py
 http://127.0.0.1:5000
 ```
 
+### 測試方式
+
+```bash
+python -m unittest discover
+```
+
+目前測試涵蓋：
+- 高優先且 deadline 較近的任務會被優先安排。
+- 可用時間不足時會產生 overflow 與衝突警告。
+- 任務完成後會更新統計與估時誤差。
+
+### Demo 影片建議流程
+1. 簡短介紹問題：學生任務多，手動排序很麻煩。
+2. 新增幾個任務，展示 deadline、預估時數與優先等級。
+3. 產生今日排程，說明分數、時間區塊與衝突警告。
+4. 標記任務完成，填入實際時數，展示統計面板。
+5. 執行效能分析，說明 Priority Queue、Sort、SJF 的比較結果。
+6. 總結課程關聯：heap、greedy、排序、時間複雜度與實測比較。
+
 ## 專案結構
 
 ```text
@@ -96,7 +149,7 @@ http://127.0.0.1:5000
 
 ## 排程分數公式
 
-Prototype 目前使用以下概念計算每個任務的分數：
+目前使用以下概念計算每個任務的分數：
 
 ```text
 score = deadline urgency + priority weight + duration bias

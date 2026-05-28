@@ -58,6 +58,8 @@
         </aside>
 
         <section class="workspace">
+          <section class="stats-grid" id="statsGrid"></section>
+
           <section class="panel controls">
             <label>
               日期
@@ -100,7 +102,13 @@
                 <h2>效能分析</h2>
                 <p>比較 Priority Queue、完整排序與 SJF 在同一批任務上的執行時間。</p>
               </div>
-              <button id="benchmarkButton" class="secondary-button">執行測試</button>
+              <div class="benchmark-actions">
+                <label>
+                  測試任務數
+                  <input id="benchmarkSize" type="number" min="100" step="100" value="5000" />
+                </label>
+                <button id="benchmarkButton" class="secondary-button">執行測試</button>
+              </div>
             </div>
             <div id="benchmarkResult" class="benchmark-grid"></div>
           </section>

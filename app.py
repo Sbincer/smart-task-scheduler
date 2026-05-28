@@ -13,6 +13,8 @@ from scheduler import (
     parse_task_payload,
     read_tasks,
     save_tasks,
+    task_statistics,
+    update_task_payload,
 )
 
 
@@ -58,6 +60,27 @@ def delete_task(task_id: str):
     return jsonify({"deleted": len(tasks) - len(next_tasks)})
 
 
+@app.patch("/api/tasks/<task_id>")
+def update_task(task_id: str):
+    payload = request.get_json(force=True)
+    tasks = read_tasks(DATA_PATH)
+    updated_task = None
+    next_tasks = []
+
+    for task in tasks:
+        if task["id"] == task_id:
+            updated_task = update_task_payload(task, payload)
+            next_tasks.append(updated_task)
+        else:
+            next_tasks.append(task)
+
+    if updated_task is None:
+        return jsonify({"error": "Task not found"}), 404
+
+    save_tasks(DATA_PATH, next_tasks)
+    return jsonify(updated_task)
+
+
 @app.post("/api/schedule")
 def schedule_tasks():
     payload = request.get_json(silent=True) or {}
@@ -77,6 +100,12 @@ def schedule_tasks():
     return jsonify(result)
 
 
+@app.get("/api/stats")
+def stats():
+    target_date = request.args.get("target_date")
+    return jsonify(task_statistics(read_tasks(DATA_PATH), target_date=target_date))
+
+
 @app.get("/api/benchmark")
 def benchmark():
     task_count = int(request.args.get("task_count", 3000))
@@ -85,4 +114,4 @@ def benchmark():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, use_reloader=False)
